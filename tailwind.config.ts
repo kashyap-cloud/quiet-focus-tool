@@ -57,11 +57,29 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Calm Mind custom colors
+        calm: {
+          blue: "hsl(var(--calm-blue))",
+          mint: "hsl(var(--calm-mint))",
+          lavender: "hsl(var(--calm-lavender))",
+          peach: "hsl(var(--calm-peach))",
+          rose: "hsl(var(--calm-rose))",
+          cream: "hsl(var(--calm-cream))",
+        },
+        activity: {
+          attention: "hsl(var(--activity-attention))",
+          stillness: "hsl(var(--activity-stillness))",
+          label: "hsl(var(--activity-label))",
+          picker: "hsl(var(--activity-picker))",
+          loop: "hsl(var(--activity-loop))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        "2xl": "1.5rem",
+        "3xl": "2rem",
       },
       keyframes: {
         "accordion-down": {
@@ -84,6 +102,9 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
     },
   },
