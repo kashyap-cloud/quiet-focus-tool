@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import CompletionScreen from "@/components/CompletionScreen";
-import { ArrowLeft, RotateCcw } from "lucide-react";
+import { ArrowLeft, RotateCcw, X } from "lucide-react";
 
 const floatingMessages = [
   "You're doing great...",
@@ -15,7 +15,7 @@ const floatingMessages = [
 
 const DoNothing = () => {
   const navigate = useNavigate();
-  const [phase, setPhase] = useState<"intro" | "active" | "completed">("intro");
+  const [phase, setPhase] = useState<"intro" | "active" | "completed" | "cancelled">("intro");
   const [timeLeft, setTimeLeft] = useState(60);
   const [showReminder, setShowReminder] = useState(false);
   const [reminderKey, setReminderKey] = useState(0);
@@ -70,6 +70,47 @@ const DoNothing = () => {
   const handleBack = () => {
     navigate("/");
   };
+
+  const handleCancel = () => {
+    setPhase("cancelled");
+  };
+
+  if (phase === "cancelled") {
+    return (
+      <div className="min-h-screen bg-calm-cream flex flex-col items-center justify-center px-6">
+        <div className="text-center max-w-sm mx-auto opacity-0 animate-fade-in-scale" style={{ animationFillMode: "forwards" }}>
+          {/* Icon */}
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-calm-lavender/30 mb-6">
+            <span className="text-3xl">💙</span>
+          </div>
+
+          {/* Message */}
+          <h2 className="text-xl font-medium text-foreground mb-4">
+            That's okay
+          </h2>
+          <p className="text-muted-foreground text-base mb-8 leading-relaxed">
+            No pressure, no worries. You showed up, and that matters. Come back whenever you're ready.
+          </p>
+
+          {/* Actions */}
+          <div className="space-y-3">
+            <button
+              onClick={() => { setPhase("active"); setTimeLeft(60); }}
+              className="w-full px-6 py-4 rounded-2xl bg-calm-mint/30 text-foreground font-medium tap-feedback shadow-soft hover:shadow-soft-lg transition-all"
+            >
+              Try again
+            </button>
+            <button
+              onClick={() => navigate("/")}
+              className="w-full px-6 py-4 rounded-2xl bg-card text-foreground font-medium tap-feedback shadow-soft hover:shadow-soft-lg transition-all"
+            >
+              Return Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (phase === "completed") {
     return (
@@ -148,6 +189,13 @@ const DoNothing = () => {
           aria-label="Restart"
         >
           <RotateCcw className="w-5 h-5 text-foreground" />
+        </button>
+        <button
+          onClick={(e) => { e.stopPropagation(); handleCancel(); }}
+          className="p-3 rounded-full bg-card/80 shadow-soft tap-feedback hover:scale-105 transition-all"
+          aria-label="Cancel"
+        >
+          <X className="w-5 h-5 text-foreground" />
         </button>
       </div>
 
