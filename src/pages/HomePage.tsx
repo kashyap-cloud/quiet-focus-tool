@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Target, Pause, Tag, Leaf, RefreshCw } from "lucide-react";
+import { Target, Pause, Tag } from "lucide-react";
 
 interface Activity {
   id: string;
@@ -23,8 +23,8 @@ const activities: Activity[] = [
   },
   {
     id: "do-nothing",
-    title: "Do Nothing",
-    description: "One minute of peace",
+    title: "Resist the Urge",
+    description: "A moment of peaceful stillness",
     icon: <Pause className="w-6 h-6" />,
     colorClass: "text-foreground",
     bgClass: "bg-activity-stillness",
@@ -38,24 +38,6 @@ const activities: Activity[] = [
     colorClass: "text-secondary-foreground",
     bgClass: "bg-activity-label/30",
     path: "/activity/label-the-noise",
-  },
-  {
-    id: "compulsion-picker",
-    title: "Compulsion Picker",
-    description: "Choose a healthy action",
-    icon: <Leaf className="w-6 h-6" />,
-    colorClass: "text-accent-foreground",
-    bgClass: "bg-activity-picker/30",
-    path: "/activity/compulsion-picker",
-  },
-  {
-    id: "end-the-loop",
-    title: "End the Loop",
-    description: "Recognize your patterns",
-    icon: <RefreshCw className="w-6 h-6" />,
-    colorClass: "text-accent-foreground",
-    bgClass: "bg-activity-loop/30",
-    path: "/activity/end-the-loop",
   },
 ];
 
@@ -123,7 +105,7 @@ const HomePage = () => {
         </nav>
 
         {/* Footer */}
-        <footer className="text-center mt-12 opacity-0 animate-fade-in" style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}>
+        <footer className="text-center mt-12 opacity-0 animate-fade-in" style={{ animationDelay: "0.5s", animationFillMode: "forwards" }}>
           <p className="text-xs text-muted-foreground/60">
             Breathe. You're doing great.
           </p>

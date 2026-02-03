@@ -9,6 +9,7 @@ interface NoiseCard {
   text: string;
   category: Category;
   placed: boolean;
+  placedIn?: Category;
 }
 
 const initialCards: NoiseCard[] = [
@@ -26,11 +27,25 @@ const categories: { id: Category; label: string; emoji: string; bgClass: string 
   { id: "urge", label: "Urge", emoji: "⚡", bgClass: "bg-calm-lavender/30" },
 ];
 
+const appreciations = [
+  "Well noticed! 🌟",
+  "That's right! ✨",
+  "Great awareness! 💫",
+  "You got it! 🌿",
+  "Exactly right! 💙",
+];
+
 const LabelTheNoise = () => {
   const [cards, setCards] = useState<NoiseCard[]>(initialCards);
   const [draggedCard, setDraggedCard] = useState<NoiseCard | null>(null);
   const [selectedCard, setSelectedCard] = useState<NoiseCard | null>(null);
   const [completed, setCompleted] = useState(false);
+  const [feedback, setFeedback] = useState<{ message: string; isCorrect: boolean; cardId: number } | null>(null);
+  const [placedCards, setPlacedCards] = useState<Record<Category, NoiseCard[]>>({
+    thought: [],
+    feeling: [],
+    urge: [],
+  });
 
   const handleDragStart = (card: NoiseCard) => {
     setDraggedCard(card);
@@ -40,22 +55,48 @@ const LabelTheNoise = () => {
     setDraggedCard(null);
   };
 
-  const handleDrop = useCallback((category: Category) => {
+  const showFeedback = (message: string, isCorrect: boolean, cardId: number) => {
+    setFeedback({ message, isCorrect, cardId });
+    setTimeout(() => setFeedback(null), 2500);
+  };
+
+  const getCategoryLabel = (category: Category) => {
+    return categories.find(c => c.id === category)?.label || category;
+  };
+
+  const handleDrop = useCallback((targetCategory: Category) => {
     const cardToPlace = draggedCard || selectedCard;
     if (!cardToPlace) return;
 
-    setCards((prev) => {
-      const updated = prev.map((c) =>
-        c.id === cardToPlace.id ? { ...c, placed: true } : c
-      );
+    const isCorrect = cardToPlace.category === targetCategory;
+    
+    if (isCorrect) {
+      // Correct placement
+      const appreciation = appreciations[Math.floor(Math.random() * appreciations.length)];
+      showFeedback(appreciation, true, cardToPlace.id);
       
-      // Check if all cards are placed
-      if (updated.every((c) => c.placed)) {
-        setTimeout(() => setCompleted(true), 500);
-      }
+      setCards((prev) => {
+        const updated = prev.map((c) =>
+          c.id === cardToPlace.id ? { ...c, placed: true, placedIn: targetCategory } : c
+        );
+        
+        // Check if all cards are placed correctly
+        if (updated.every((c) => c.placed)) {
+          setTimeout(() => setCompleted(true), 800);
+        }
+        
+        return updated;
+      });
       
-      return updated;
-    });
+      setPlacedCards((prev) => ({
+        ...prev,
+        [targetCategory]: [...prev[targetCategory], cardToPlace],
+      }));
+    } else {
+      // Wrong placement - gentle guidance
+      const correctCategory = getCategoryLabel(cardToPlace.category);
+      showFeedback(`This belongs in "${correctCategory}" 💙`, false, cardToPlace.id);
+    }
 
     setDraggedCard(null);
     setSelectedCard(null);
@@ -75,14 +116,14 @@ const LabelTheNoise = () => {
   if (completed) {
     return (
       <CompletionScreen
-        title="Noise labeled"
-        message="Naming what's in your mind creates space between you and your thoughts."
+        title="Beautifully sorted"
+        message="Naming what's in your mind creates space between you and your thoughts. You're building self-awareness."
       />
     );
   }
 
   const unplacedCards = cards.filter((c) => !c.placed);
-  const placedCount = cards.filter((c) => c.placed).length;
+  const correctCount = cards.filter((c) => c.placed && c.placedIn === c.category).length;
 
   return (
     <ActivityLayout
@@ -90,15 +131,30 @@ const LabelTheNoise = () => {
       subtitle="Categorize what's in your mind"
       bgColorClass="bg-background"
     >
-      <div className="flex flex-col gap-6 pt-4">
+      <div className="flex flex-col gap-5 pt-4">
         {/* Progress */}
         <div className="text-center opacity-0 animate-fade-in" style={{ animationFillMode: "forwards" }}>
           <p className="text-sm text-muted-foreground">
-            {placedCount} of {cards.length} sorted
+            {correctCount} of {cards.length} sorted
           </p>
         </div>
 
-        {/* Categories */}
+        {/* Feedback toast */}
+        {feedback && (
+          <div 
+            className={`
+              fixed top-20 left-1/2 -translate-x-1/2 z-30
+              px-6 py-3 rounded-2xl shadow-soft backdrop-blur-sm
+              animate-fade-in-scale text-center max-w-xs
+              ${feedback.isCorrect ? "bg-calm-mint/90 text-foreground" : "bg-card/95 text-muted-foreground"}
+            `}
+            style={{ animationFillMode: "forwards" }}
+          >
+            {feedback.message}
+          </div>
+        )}
+
+        {/* Categories with placed cards */}
         <div className="grid grid-cols-3 gap-3 opacity-0 animate-fade-in" style={{ animationDelay: "0.1s", animationFillMode: "forwards" }}>
           {categories.map((cat) => (
             <button
@@ -107,28 +163,43 @@ const LabelTheNoise = () => {
               onDragOver={(e) => e.preventDefault()}
               onDrop={() => handleDrop(cat.id)}
               className={`
-                ${cat.bgClass} rounded-2xl p-4 min-h-[100px]
-                flex flex-col items-center justify-center gap-2
-                transition-all duration-200
-                ${selectedCard ? "ring-2 ring-primary/50 cursor-pointer hover:scale-105" : ""}
-                ${draggedCard ? "ring-2 ring-primary/30" : ""}
+                ${cat.bgClass} rounded-2xl p-3 min-h-[120px]
+                flex flex-col items-center gap-2
+                transition-all duration-300
+                ${selectedCard ? "ring-2 ring-primary/50 cursor-pointer hover:scale-[1.02]" : ""}
+                ${draggedCard ? "ring-2 ring-primary/30 scale-[1.02]" : ""}
               `}
             >
-              <span className="text-2xl">{cat.emoji}</span>
+              <span className="text-xl">{cat.emoji}</span>
               <span className="text-xs font-medium text-foreground">{cat.label}</span>
+              
+              {/* Show placed cards count */}
+              {placedCards[cat.id].length > 0 && (
+                <div className="mt-auto pt-2 w-full">
+                  {placedCards[cat.id].map((card) => (
+                    <div 
+                      key={card.id}
+                      className="text-[10px] text-muted-foreground bg-card/50 rounded-lg px-2 py-1 mb-1 truncate"
+                      title={card.text}
+                    >
+                      "{card.text.slice(0, 15)}..."
+                    </div>
+                  ))}
+                </div>
+              )}
             </button>
           ))}
         </div>
 
-        {/* Instruction */}
+        {/* Instruction when card is selected */}
         {selectedCard && (
           <p className="text-center text-sm text-primary animate-fade-in">
-            Now tap a category above to place it
+            Now tap where this belongs
           </p>
         )}
 
         {/* Cards to sort */}
-        <div className="space-y-3 mt-4">
+        <div className="space-y-3 mt-2">
           {unplacedCards.map((card, index) => (
             <div
               key={card.id}
@@ -138,20 +209,27 @@ const LabelTheNoise = () => {
               onClick={() => handleCardClick(card)}
               className={`
                 p-4 rounded-xl bg-card shadow-soft cursor-grab active:cursor-grabbing
-                transition-all duration-200 tap-feedback
+                transition-all duration-300 tap-feedback
                 opacity-0 animate-slide-in-bottom
-                ${selectedCard?.id === card.id ? "ring-2 ring-primary scale-[1.02]" : "hover:shadow-soft-lg"}
+                ${selectedCard?.id === card.id ? "ring-2 ring-primary scale-[1.02] shadow-soft-lg" : "hover:shadow-soft-lg hover:scale-[1.01]"}
+                ${feedback?.cardId === card.id && !feedback.isCorrect ? "animate-shake" : ""}
               `}
               style={{ animationDelay: `${0.2 + index * 0.1}s`, animationFillMode: "forwards" }}
             >
-              <p className="text-sm text-foreground text-center">"{card.text}"</p>
+              <p className="text-sm text-foreground text-center leading-relaxed">"{card.text}"</p>
             </div>
           ))}
         </div>
 
         {unplacedCards.length > 0 && (
-          <p className="text-xs text-muted-foreground/60 text-center mt-4 opacity-0 animate-fade-in" style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}>
-            Tap a card, then tap a category • Or drag and drop
+          <p className="text-xs text-muted-foreground/60 text-center mt-2 opacity-0 animate-fade-in" style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}>
+            Tap a card, then tap where it belongs
+          </p>
+        )}
+        
+        {unplacedCards.length === 0 && !completed && (
+          <p className="text-center text-muted-foreground animate-fade-in py-8">
+            All sorted! ✨
           </p>
         )}
       </div>
