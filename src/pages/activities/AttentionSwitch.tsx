@@ -22,10 +22,10 @@ interface ShapeItem {
   found: boolean;
 }
 
-const difficultySettings: Record<Difficulty, { label: string; challenges: number; description: string }> = {
-  easy: { label: "Gentle", challenges: 2, description: "A calm start" },
-  medium: { label: "Balanced", challenges: 3, description: "A steady pace" },
-  hard: { label: "Focused", challenges: 2, description: "Stay present" },
+const difficultySettings: Record<Difficulty, { label: string; challenges: number; description: string; bgClass: string; emoji: string }> = {
+  easy: { label: "Gentle", challenges: 2, description: "A calm start", bgClass: "bg-calm-mint/30", emoji: "🌿" },
+  medium: { label: "Balanced", challenges: 3, description: "A steady pace", bgClass: "bg-calm-blue/30", emoji: "🌊" },
+  hard: { label: "Focused", challenges: 2, description: "Stay present", bgClass: "bg-calm-lavender/30", emoji: "✨" },
 };
 
 const generateChallenges = (difficulty: Difficulty): Challenge[] => {
@@ -127,9 +127,9 @@ const ShapeComponent = ({
   glowId: number | null;
 }) => {
   const sizeClasses = {
-    small: "w-10 h-10",
-    medium: "w-14 h-14",
-    large: "w-18 h-18",
+    small: "w-8 h-8",
+    medium: "w-12 h-12",
+    large: "w-16 h-16",
   };
   
   const colorClasses: Record<ShapeItem["color"], string> = {
@@ -144,9 +144,9 @@ const ShapeComponent = ({
     w-20 h-20 flex items-center justify-center
     tap-feedback cursor-pointer
     transition-all duration-300 ease-out
-    ${shape.found ? "opacity-30 scale-75" : "hover:scale-105"}
+    ${shape.found ? "opacity-50 scale-90 pointer-events-none" : "hover:scale-110 active:scale-95"}
     ${shakeId === shape.id ? "animate-shake" : ""}
-    ${glowId === shape.id ? "ring-4 ring-calm-mint/60" : ""}
+    ${glowId === shape.id ? "ring-4 ring-calm-mint/70 scale-110" : ""}
   `;
 
   const renderShape = () => {
@@ -287,15 +287,16 @@ const AttentionSwitch = () => {
                 key={diff}
                 onClick={() => startWithDifficulty(diff)}
                 className={`
-                  w-full p-5 rounded-2xl bg-card shadow-soft
-                  flex items-center justify-between
+                  w-full p-5 rounded-2xl ${difficultySettings[diff].bgClass} shadow-soft
+                  flex items-center gap-4
                   tap-feedback hover:shadow-soft-lg hover:scale-[1.02]
                   transition-all duration-300
                   opacity-0 animate-fade-in-up
                 `}
                 style={{ animationDelay: `${index * 0.1}s`, animationFillMode: "forwards" }}
               >
-                <div className="text-left">
+                <span className="text-2xl">{difficultySettings[diff].emoji}</span>
+                <div className="text-left flex-1">
                   <h3 className="font-medium text-foreground">{difficultySettings[diff].label}</h3>
                   <p className="text-sm text-muted-foreground">{difficultySettings[diff].description}</p>
                 </div>
