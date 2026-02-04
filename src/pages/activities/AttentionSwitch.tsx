@@ -54,8 +54,10 @@ const allTemplates: Record<Difficulty, ChallengeTemplate[]> = {
     { instruction: "Find all peach squares", targetDescription: "peach squares", targetType: "square", targetColor: "peach" },
     { instruction: "Tap the rose circles", targetDescription: "rose circles", targetType: "circle", targetColor: "rose" },
     { instruction: "Find the blue squares", targetDescription: "blue squares", targetType: "square", targetColor: "blue" },
-    { instruction: "Tap lavender circles", targetDescription: "lavender circles", targetType: "circle", targetColor: "lavender" },
-    { instruction: "Find mint squares", targetDescription: "mint squares", targetType: "square", targetColor: "mint" },
+    { instruction: "Tap lavender squares", targetDescription: "lavender squares", targetType: "square", targetColor: "lavender" },
+    { instruction: "Find mint circles", targetDescription: "mint circles", targetType: "circle", targetColor: "mint" },
+    { instruction: "Tap peach circles", targetDescription: "peach circles", targetType: "circle", targetColor: "peach" },
+    { instruction: "Find rose squares", targetDescription: "rose squares", targetType: "square", targetColor: "rose" },
   ],
   medium: [
     { instruction: "Tap the mint triangles", targetDescription: "mint triangles", targetType: "triangle", targetColor: "mint" },
@@ -66,6 +68,8 @@ const allTemplates: Record<Difficulty, ChallengeTemplate[]> = {
     { instruction: "Find blue triangles", targetDescription: "blue triangles", targetType: "triangle", targetColor: "blue" },
     { instruction: "Tap peach triangles", targetDescription: "peach triangles", targetType: "triangle", targetColor: "peach" },
     { instruction: "Find rose circles", targetDescription: "rose circles", targetType: "circle", targetColor: "rose" },
+    { instruction: "Tap mint squares", targetDescription: "mint squares", targetType: "square", targetColor: "mint" },
+    { instruction: "Find lavender circles", targetDescription: "lavender circles", targetType: "circle", targetColor: "lavender" },
   ],
   hard: [
     { instruction: "Find the large blue shapes", targetDescription: "large blue shapes", targetColor: "blue", targetSize: "large" },
@@ -76,6 +80,8 @@ const allTemplates: Record<Difficulty, ChallengeTemplate[]> = {
     { instruction: "Tap medium blue shapes", targetDescription: "medium blue shapes", targetColor: "blue", targetSize: "medium" },
     { instruction: "Find small mint shapes", targetDescription: "small mint shapes", targetColor: "mint", targetSize: "small" },
     { instruction: "Tap large lavender shapes", targetDescription: "large lavender shapes", targetColor: "lavender", targetSize: "large" },
+    { instruction: "Find medium peach shapes", targetDescription: "medium peach shapes", targetColor: "peach", targetSize: "medium" },
+    { instruction: "Tap small rose shapes", targetDescription: "small rose shapes", targetColor: "rose", targetSize: "small" },
   ],
 };
 
@@ -150,10 +156,10 @@ const generateSingleChallenge = (template: ChallengeTemplate, difficulty: Diffic
   };
 };
 
-const generateRandomChallenge = (difficulty: Difficulty, id: number): Challenge => {
-  const templates = allTemplates[difficulty];
-  const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
-  return generateSingleChallenge(randomTemplate, difficulty, id);
+// Generate all 10 unique challenges upfront with shuffled templates
+const generateAllChallenges = (difficulty: Difficulty): Challenge[] => {
+  const templates = shuffleArray([...allTemplates[difficulty]]);
+  return templates.map((template, index) => generateSingleChallenge(template, difficulty, index));
 };
 
 const ShapeComponent = ({
@@ -231,8 +237,8 @@ const ShapeComponent = ({
 const AttentionSwitch = () => {
   const navigate = useNavigate();
   const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [currentChallengeIndex, setCurrentChallengeIndex] = useState(0);
-  const [currentChallenge, setCurrentChallenge] = useState<Challenge | null>(null);
   const [completed, setCompleted] = useState(false);
   const [shakeId, setShakeId] = useState<number | null>(null);
   const [glowId, setGlowId] = useState<number | null>(null);
@@ -242,6 +248,7 @@ const AttentionSwitch = () => {
   const [timeoutMessage, setTimeoutMessage] = useState("");
 
   const totalRounds = difficulty ? difficultySettings[difficulty].rounds : 10;
+  const currentChallenge = challenges[currentChallengeIndex] || null;
 
   // Timer effect
   useEffect(() => {
@@ -259,10 +266,10 @@ const AttentionSwitch = () => {
   }, [timerActive, timeLeft, currentChallenge]);
 
   const startWithDifficulty = (diff: Difficulty) => {
+    const allChallenges = generateAllChallenges(diff);
     setDifficulty(diff);
+    setChallenges(allChallenges);
     setCurrentChallengeIndex(0);
-    const firstChallenge = generateRandomChallenge(diff, 0);
-    setCurrentChallenge(firstChallenge);
     setTimeLeft(difficultySettings[diff].timeLimit);
     setTimerActive(true);
   };
@@ -275,8 +282,6 @@ const AttentionSwitch = () => {
     if (currentChallengeIndex < totalRounds - 1) {
       const nextIndex = currentChallengeIndex + 1;
       setCurrentChallengeIndex(nextIndex);
-      const nextChallenge = generateRandomChallenge(difficulty, nextIndex);
-      setCurrentChallenge(nextChallenge);
       setTimeLeft(difficultySettings[difficulty].timeLimit);
       setTimerActive(true);
     } else {
@@ -292,17 +297,16 @@ const AttentionSwitch = () => {
       setGlowId(tappedShape.id);
       setTimeout(() => setGlowId(null), 400);
       
-      setCurrentChallenge((prev) => {
-        if (!prev) return prev;
-        
-        const updatedShapes = prev.shapes.map((s) =>
+      setChallenges((prev) => {
+        const updated = [...prev];
+        const challenge = { ...updated[currentChallengeIndex] };
+        challenge.shapes = challenge.shapes.map((s) =>
           s.id === tappedShape.id ? { ...s, found: true } : s
         );
-        
-        const updatedChallenge = { ...prev, shapes: updatedShapes };
+        updated[currentChallengeIndex] = challenge;
         
         // Check if all targets found
-        const allFound = updatedShapes.filter((s) => s.isTarget).every((s) => s.found);
+        const allFound = challenge.shapes.filter((s) => s.isTarget).every((s) => s.found);
         
         if (allFound) {
           setTimerActive(false);
@@ -311,7 +315,7 @@ const AttentionSwitch = () => {
           }, 600);
         }
         
-        return updatedChallenge;
+        return updated;
       });
     } else {
       // Incorrect - gentle shake
@@ -361,8 +365,9 @@ const AttentionSwitch = () => {
                   <h3 className="font-medium text-foreground">{difficultySettings[diff].label}</h3>
                   <p className="text-sm text-muted-foreground">{difficultySettings[diff].description}</p>
                 </div>
-                <div className="text-xs text-muted-foreground/60">
-                  {difficultySettings[diff].rounds} rounds · {difficultySettings[diff].timeLimit}s
+                <div className="text-xs text-muted-foreground/60 text-right">
+                  <div>{difficultySettings[diff].rounds} questions</div>
+                  <div>{difficultySettings[diff].timeLimit}s/question</div>
                 </div>
               </button>
             ))}
