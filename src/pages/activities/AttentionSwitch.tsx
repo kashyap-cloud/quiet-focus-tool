@@ -274,6 +274,24 @@ const AttentionSwitch = () => {
     setTimerActive(true);
   };
 
+  const retryCurrentChallenge = useCallback(() => {
+    if (!difficulty) return;
+    
+    setShowTimeout(false);
+    
+    // Reset the current challenge shapes
+    setChallenges((prev) => {
+      const updated = [...prev];
+      const challenge = { ...updated[currentChallengeIndex] };
+      challenge.shapes = challenge.shapes.map((s) => ({ ...s, found: false }));
+      updated[currentChallengeIndex] = challenge;
+      return updated;
+    });
+    
+    setTimeLeft(difficultySettings[difficulty].timeLimit);
+    setTimerActive(true);
+  }, [difficulty, currentChallengeIndex]);
+
   const moveToNextChallenge = useCallback(() => {
     if (!difficulty) return;
     
@@ -416,12 +434,20 @@ const AttentionSwitch = () => {
               <p className="text-lg font-medium text-foreground mb-6">
                 {timeoutMessage}
               </p>
-              <button
-                onClick={moveToNextChallenge}
-                className="px-6 py-3 rounded-2xl bg-calm-mint/30 text-foreground font-medium tap-feedback shadow-soft hover:shadow-soft-lg transition-all"
-              >
-                Continue
-              </button>
+              <div className="space-y-3">
+                <button
+                  onClick={retryCurrentChallenge}
+                  className="w-full px-6 py-3 rounded-2xl bg-calm-blue/30 text-foreground font-medium tap-feedback shadow-soft hover:shadow-soft-lg transition-all"
+                >
+                  Retry this question
+                </button>
+                <button
+                  onClick={moveToNextChallenge}
+                  className="w-full px-6 py-3 rounded-2xl bg-calm-mint/30 text-foreground font-medium tap-feedback shadow-soft hover:shadow-soft-lg transition-all"
+                >
+                  {currentChallengeIndex < totalRounds - 1 ? "Move to next" : "Finish"}
+                </button>
+              </div>
             </div>
           </div>
         )}
