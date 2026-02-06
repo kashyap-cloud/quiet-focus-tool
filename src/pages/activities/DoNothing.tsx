@@ -135,7 +135,7 @@ const DoNothing = () => {
 
         <div className="text-center max-w-sm mx-auto opacity-0 animate-fade-in-scale" style={{ animationFillMode: "forwards" }}>
           {/* Icon */}
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-calm-blue/30 mb-8 animate-breathe">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-calm-blue/30 mb-6 animate-breathe">
             <span className="text-4xl">🌿</span>
           </div>
 
@@ -148,9 +148,18 @@ const DoNothing = () => {
           <p className="text-muted-foreground text-base mb-3 leading-relaxed">
             For one minute, give yourself permission to just be.
           </p>
-          <p className="text-muted-foreground/70 text-sm mb-10 leading-relaxed">
+          <p className="text-muted-foreground/70 text-sm mb-6 leading-relaxed">
             No tasks. No scrolling. No planning.<br />Just you, breathing.
           </p>
+
+          {/* Gentle disclaimer */}
+          <div className="bg-calm-lavender/20 rounded-2xl p-4 mb-8 text-left">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              <span className="text-base mr-2">💙</span>
+              <strong className="text-foreground">A gentle note:</strong> If stillness feels uncomfortable or triggers difficult feelings, that's completely okay. 
+              You can stop anytime—there's no pressure here. This is about practicing, not perfection.
+            </p>
+          </div>
 
           {/* Start button */}
           <button
