@@ -12,14 +12,58 @@ interface NoiseCard {
   placedIn?: Category;
 }
 
-const initialCards: NoiseCard[] = [
-  { id: 1, text: "I should check my phone", category: "urge", placed: false },
-  { id: 2, text: "I feel restless", category: "feeling", placed: false },
-  { id: 3, text: "What if I forget something?", category: "thought", placed: false },
-  { id: 4, text: "I need to do something", category: "urge", placed: false },
-  { id: 5, text: "I'm anxious about tomorrow", category: "feeling", placed: false },
-  { id: 6, text: "This is taking too long", category: "thought", placed: false },
+// Expanded card pool for variety - shuffled each session
+const allCards: Omit<NoiseCard, "placed" | "placedIn">[] = [
+  // Urges
+  { id: 1, text: "I should check my phone", category: "urge" },
+  { id: 2, text: "I need to do something", category: "urge" },
+  { id: 3, text: "I want to wash my hands again", category: "urge" },
+  { id: 4, text: "I should double-check the door", category: "urge" },
+  { id: 5, text: "I need to fix this right now", category: "urge" },
+  { id: 6, text: "I have to count this again", category: "urge" },
+  { id: 7, text: "I should look this up online", category: "urge" },
+  { id: 8, text: "I need reassurance from someone", category: "urge" },
+  // Feelings
+  { id: 9, text: "I feel restless", category: "feeling" },
+  { id: 10, text: "I'm anxious about tomorrow", category: "feeling" },
+  { id: 11, text: "I feel uncertain", category: "feeling" },
+  { id: 12, text: "I'm uncomfortable with this", category: "feeling" },
+  { id: 13, text: "I feel overwhelmed", category: "feeling" },
+  { id: 14, text: "I'm frustrated with myself", category: "feeling" },
+  { id: 15, text: "I feel on edge", category: "feeling" },
+  { id: 16, text: "I'm scared something bad will happen", category: "feeling" },
+  // Thoughts
+  { id: 17, text: "What if I forget something?", category: "thought" },
+  { id: 18, text: "This is taking too long", category: "thought" },
+  { id: 19, text: "Did I do that correctly?", category: "thought" },
+  { id: 20, text: "Something doesn't feel right", category: "thought" },
+  { id: 21, text: "Maybe I should start over", category: "thought" },
+  { id: 22, text: "What if this isn't good enough?", category: "thought" },
+  { id: 23, text: "I can't stop thinking about this", category: "thought" },
+  { id: 24, text: "Am I sure I turned that off?", category: "thought" },
 ];
+
+// Helper to shuffle and pick cards
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
+
+// Get balanced set of cards (2 from each category)
+const getSessionCards = (): NoiseCard[] => {
+  const urges = shuffleArray(allCards.filter(c => c.category === "urge")).slice(0, 2);
+  const feelings = shuffleArray(allCards.filter(c => c.category === "feeling")).slice(0, 2);
+  const thoughts = shuffleArray(allCards.filter(c => c.category === "thought")).slice(0, 2);
+  return shuffleArray([...urges, ...feelings, ...thoughts]).map((card, idx) => ({
+    ...card,
+    id: idx + 1,
+    placed: false,
+  }));
+};
 
 const categories: { id: Category; label: string; emoji: string; bgClass: string }[] = [
   { id: "thought", label: "Thought", emoji: "💭", bgClass: "bg-calm-blue/30" },
@@ -36,7 +80,7 @@ const appreciations = [
 ];
 
 const LabelTheNoise = () => {
-  const [cards, setCards] = useState<NoiseCard[]>(initialCards);
+  const [cards, setCards] = useState<NoiseCard[]>(() => getSessionCards());
   const [draggedCard, setDraggedCard] = useState<NoiseCard | null>(null);
   const [selectedCard, setSelectedCard] = useState<NoiseCard | null>(null);
   const [completed, setCompleted] = useState(false);
@@ -132,8 +176,16 @@ const LabelTheNoise = () => {
       bgColorClass="bg-background"
     >
       <div className="flex flex-col gap-5 pt-4">
+        {/* Gentle disclaimer */}
+        <div className="bg-calm-blue/20 rounded-2xl p-4 mx-auto max-w-sm opacity-0 animate-fade-in" style={{ animationFillMode: "forwards" }}>
+          <p className="text-sm text-muted-foreground leading-relaxed text-center">
+            <span className="text-base mr-1">💙</span>
+            These are common OCD experiences. Sorting them helps build awareness—there are no "right" or "wrong" answers, just gentle practice.
+          </p>
+        </div>
+
         {/* Progress */}
-        <div className="text-center opacity-0 animate-fade-in" style={{ animationFillMode: "forwards" }}>
+        <div className="text-center opacity-0 animate-fade-in" style={{ animationDelay: "0.1s", animationFillMode: "forwards" }}>
           <p className="text-sm text-muted-foreground">
             {correctCount} of {cards.length} sorted
           </p>
