@@ -145,11 +145,8 @@ const DoNothing = () => {
           </h1>
 
           {/* Subtitle */}
-          <p className="text-muted-foreground text-base mb-3 leading-relaxed">
+          <p className="text-muted-foreground text-base mb-6 leading-relaxed">
             For one minute, give yourself permission to just be.
-          </p>
-          <p className="text-muted-foreground/70 text-sm mb-6 leading-relaxed">
-            No tasks. No scrolling. No planning.<br />Just you, breathing.
           </p>
 
           {/* Gentle disclaimer */}
