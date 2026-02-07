@@ -155,9 +155,8 @@ const DoNothing = () => {
           {/* Gentle disclaimer */}
           <div className="bg-calm-lavender/20 rounded-2xl p-4 mb-8 text-left">
             <p className="text-sm text-muted-foreground leading-relaxed">
-              <span className="text-base mr-2">💙</span>
-              <strong className="text-foreground">A gentle note:</strong> If stillness feels uncomfortable or triggers difficult feelings, that's completely okay. 
-              You can stop anytime—there's no pressure here. This is about practicing, not perfection.
+              <span className="text-base mr-2">🌸</span>
+              Feeling restless? That's okay. You can pause anytime.
             </p>
           </div>
 
