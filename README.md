@@ -1,73 +1,95 @@
-# Welcome to your Lovable project
+# Quiet Focus Tool
 
-## Project info
+A beautiful, minimal mobile-first wellness app with 5 calming activities designed to help users pause, focus, and find peace.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## About
 
-## How can I edit this code?
+Quiet Focus Tool (Calm Mind) is a peaceful wellness application featuring clean iOS-inspired aesthetics with soft pastel colors, smooth animations, and spacious layouts. The app provides five distinct calming activities to help manage stress, anxiety, and intrusive thoughts.
 
-There are several ways of editing your application.
+## Features
 
-**Use Lovable**
+### 5 Wellness Activities
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+1. **Attention Switch** 🎯 - A focus exercise to redirect scattered thoughts
+2. **Do Nothing... On Purpose** ⏸️ - A stillness exercise for one minute of peace
+3. **Label the Noise** 🏷️ - A sorting activity to categorize mental experiences
+4. **Compulsion Alternative Picker** 🌿 - A gentle nudge toward healthy micro-actions
+5. **End the Loop** 🔄 - A reflection moment for self-awareness
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
+## Technology Stack
 
 This project is built with:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Vite** - Fast build tool and dev server
+- **TypeScript** - Type-safe JavaScript
+- **React** - UI library
+- **shadcn-ui** - Beautiful component library
+- **Tailwind CSS** - Utility-first CSS framework
 
-## How can I deploy this project?
+## Getting Started
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+### Prerequisites
 
-## Can I connect a custom domain to my Lovable project?
+- Node.js (v16 or higher recommended)
+- npm or yarn package manager
 
-Yes, you can!
+### Installation
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+1. Clone the repository:
+```bash
+git clone https://github.com/kashyap-cloud/quiet-focus-tool.git
+cd quiet-focus-tool
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:5173` (or another port if 5173 is in use).
+
+### Build for Production
+
+To create a production build:
+
+```bash
+npm run build
+```
+
+The built files will be in the `dist` directory.
+
+### Preview Production Build
+
+To preview the production build locally:
+
+```bash
+npm run preview
+```
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run build:dev` - Build in development mode
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npm test` - Run tests
+- `npm run test:watch` - Run tests in watch mode
+
+## Design Philosophy
+
+- **Clean iOS-inspired aesthetic** with soft, accessibility-friendly contrast
+- **Cool pastel color palette** - light blues, soft mint greens, lavender, and warm off-whites
+- **Smooth animations** for transitions and interactions
+- **Fully responsive** - works beautifully on both mobile and desktop
+- **No backend required** - fresh session each time for privacy
+- **Silent experience** - peaceful, audio-free interface
+
+## License
+
+This project is open source and available for personal and educational use.
